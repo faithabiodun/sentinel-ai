@@ -1,0 +1,158 @@
+/* Sentinel AI — design tokens
+ *
+ * Visual thesis: this is an instrument, not a dashboard.
+ *
+ * Compliance products (Vanta, Drata, Secureframe) sell reassurance — soft
+ * shadows, rounded cards, progress rings, mascots. Sentinel sells *findings*.
+ * The grammar is closer to an oscilloscope or a forensics workbench: hairline
+ * rules instead of drop shadows, monospace for anything an analyst would copy
+ * into a ticket, and a dark investigation canvas that the light chrome frames.
+ *
+ * That structural difference is what keeps this from reading as a clone —
+ * the palette swap alone would not.
+ */
+
+:root {
+  /* ---------------------------------------------------------------------
+   * Iris — the primary ramp.
+   * Blue-shifted violet. Warmer purples read consumer/crypto; this sits
+   * closer to instrument panel.
+   * ------------------------------------------------------------------ */
+  --iris-50:  #f6f4fe;
+  --iris-100: #ede9fd;
+  --iris-200: #dcd5fb;
+  --iris-300: #c2b4f7;
+  --iris-400: #a48cf1;
+  --iris-500: #8964e8;
+  --iris-600: #7343d8;  /* primary — actions, active state, focus */
+  --iris-700: #6234bc;
+  --iris-800: #512c99;
+  --iris-900: #43277b;
+  --iris-950: #2a1854;
+
+  /* ---------------------------------------------------------------------
+   * Ink — the dark investigation canvas.
+   * Purple-black, not neutral black, so the dark surfaces stay in the same
+   * colour family as the chrome rather than looking like a separate app.
+   * ------------------------------------------------------------------ */
+  --ink-900: #14111f;   /* canvas background */
+  --ink-800: #1c1830;   /* raised surface on canvas */
+  --ink-700: #241f3d;   /* border on canvas */
+  --ink-600: #322b52;
+  --ink-500: #4a4272;
+
+  /* ---------------------------------------------------------------------
+   * Paper — light chrome. Cool grey with a faint purple cast so nothing
+   * clashes against the iris ramp.
+   * ------------------------------------------------------------------ */
+  --paper-0:   #ffffff;
+  --paper-50:  #fbfafd;
+  --paper-100: #f4f3f8;
+  --paper-200: #e9e7f0;   /* hairline rules */
+  --paper-300: #d6d3e0;
+  --paper-400: #a8a4b8;
+  --paper-500: #7b7690;
+  --paper-600: #57536b;
+  --paper-700: #3d3a4d;
+  --paper-800: #262336;
+
+  /* ---------------------------------------------------------------------
+   * Severity. Muted and serious — an analyst stares at these for eight
+   * hours. Saturated alarm colours cause fatigue and stop being read.
+   * ------------------------------------------------------------------ */
+  --sev-critical: #c4304c;
+  --sev-high:     #d97230;
+  --sev-medium:   #c9962b;
+  --sev-low:      #6b7a99;
+  --sev-info:     #7b7690;
+
+  /* Verdicts. 'cleared' gets equal visual weight to 'malicious' — the whole
+   * product thesis is that knowing something is benign is as valuable as
+   * knowing it is bad. */
+  --verdict-malicious:  #c4304c;
+  --verdict-suspicious: #c9962b;
+  --verdict-benign:     #2e9968;
+  --verdict-unknown:    #a8a4b8;
+
+  /* Hypothesis state — deliberately not the severity ramp. Belief and
+   * threat are different axes and should not be confused at a glance. */
+  --hyp-open:      #7343d8;
+  --hyp-confirmed: #2e9968;
+  --hyp-refuted:   #a8a4b8;
+
+  /* ---------------------------------------------------------------------
+   * Type
+   * ------------------------------------------------------------------ */
+  --font-ui:   'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Every IOC, hash, path, PID and command line renders in mono. If an
+   * analyst would paste it into a ticket, it is monospace. */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --text-2xs: 0.6875rem;  /* 11px — table meta, timestamps */
+  --text-xs:  0.75rem;
+  --text-sm:  0.8125rem;  /* 13px — dense table body, the workhorse */
+  --text-base:0.9375rem;  /* 15px */
+  --text-lg:  1.125rem;
+  --text-xl:  1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  --tracking-tight: -0.015em;
+  --tracking-wide:   0.04em;   /* uppercase labels only */
+
+  /* ---------------------------------------------------------------------
+   * Space — 4px base. Investigation UIs are dense; generous SaaS padding
+   * pushes evidence below the fold.
+   * ------------------------------------------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* ---------------------------------------------------------------------
+   * Edges. Tight radii and hairline borders. Shadows are used for genuine
+   * elevation (menus, modals) and never for decoration.
+   * ------------------------------------------------------------------ */
+  --radius-sm: 3px;
+  --radius:    5px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+
+  --border-hair: 1px solid var(--paper-200);
+  --border-ink:  1px solid var(--ink-700);
+
+  --shadow-pop: 0 4px 16px -2px rgb(20 17 31 / 0.12),
+                0 1px 3px      rgb(20 17 31 / 0.06);
+  --shadow-modal: 0 24px 48px -12px rgb(20 17 31 / 0.28);
+
+  /* Focus ring — visible against both paper and ink surfaces. */
+  --ring: 0 0 0 2px var(--paper-0), 0 0 0 4px var(--iris-500);
+  --ring-ink: 0 0 0 2px var(--ink-900), 0 0 0 4px var(--iris-400);
+
+  /* Motion. Fast and unfussy; the agent is already making the user wait. */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-fast: 120ms;
+  --dur:      180ms;
+}
+
+/* The investigation canvas — graph, timeline, live agent trace. Scoped rather
+ * than global, because Sentinel is a light app with a dark working surface,
+ * not a dark app. */
+.canvas {
+  background: var(--ink-900);
+  color: var(--paper-100);
+  --border-hair: var(--border-ink);
+  --ring: var(--ring-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
