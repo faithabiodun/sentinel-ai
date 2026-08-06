@@ -1,0 +1,15 @@
+# EVTX parsing — Rust-backed, ships abi3 wheels so it works on 3.14
+evtx==0.12.1
+
+# API
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+
+# CockroachDB over the Postgres wire protocol
+psycopg[binary,pool]==3.3.4
+
+# Bedrock (planning + embeddings) and S3
+boto3==1.43.65
+
+pydantic-settings==2.14.2
+httpx==0.28.1
