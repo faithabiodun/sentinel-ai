@@ -51,6 +51,36 @@ TACTIC_HEADLINE = [
 ]
 
 
+# What a fired rule implies, phrased as something that can be proved wrong.
+# These are the agent's starting position, not its conclusion — every one is
+# raised `open` and only the agent moves it to confirmed or refuted.
+HYPOTHESIS_FOR_TECHNIQUE: dict[str, str] = {
+    "T1003.001": "Credentials were dumped from LSASS memory",
+    "T1055": "Code was injected into another process to evade detection",
+    "T1059.001": "An encoded PowerShell payload was executed",
+    "T1047": "Commands were executed remotely over WMI",
+    "T1021.002": "A remote service was created to execute code on this host",
+    "T1021.006": "Commands were executed remotely over PowerShell Remoting",
+    "T1053.005": "Persistence was established through a scheduled task",
+    "T1218.004": "A signed Windows binary was used to proxy execution",
+    "T1218.005": "A signed Windows binary was used to proxy execution",
+    "T1218.010": "A signed Windows binary was used to proxy execution",
+    "T1218.011": "A signed Windows binary was used to proxy execution",
+    "T1220": "A signed Windows binary was used to proxy execution",
+}
+
+
+@dataclass
+class Hypothesis:
+    statement: str
+    technique: str
+    status: str = "open"
+    confidence: float = 0.0
+    supporting: int = 0
+    contradicting: int = 0
+    note: str | None = None
+
+
 @dataclass
 class TimelineEntry:
     seq: int
@@ -72,7 +102,9 @@ class Incident:
     closed_at: datetime
     alerts: list[Alert] = field(default_factory=list)
     timeline: list[TimelineEntry] = field(default_factory=list)
+    hypotheses: list[Hypothesis] = field(default_factory=list)
     users: list[str] = field(default_factory=list)
+    summary: str = ""
 
     @property
     def techniques(self) -> list[str]:
@@ -166,6 +198,64 @@ def _timeline_for(alerts: list[Alert]) -> list[TimelineEntry]:
     return entries
 
 
+def _hypotheses_for(alerts: list[Alert]) -> list[Hypothesis]:
+    """Seed the hypothesis set from which rules fired.
+
+    Confidence here is provisional and deliberately capped well below certainty:
+    a rule firing is a reason to investigate, not a finding. Corroboration from
+    several independent alerts raises it a little, because two detectors
+    agreeing is worth more than one firing twice. Nothing reaches confirmed
+    without the agent gathering evidence.
+    """
+    grouped: dict[str, list[Alert]] = {}
+    for alert in alerts:
+        if alert.technique in HYPOTHESIS_FOR_TECHNIQUE:
+            grouped.setdefault(alert.technique, []).append(alert)
+
+    hypotheses: list[Hypothesis] = []
+    for technique, supporting in grouped.items():
+        distinct_rules = {a.rule for a in supporting}
+        confidence = min(0.30 + 0.15 * len(distinct_rules), 0.70)
+
+        hypotheses.append(
+            Hypothesis(
+                statement=HYPOTHESIS_FOR_TECHNIQUE[technique],
+                technique=technique,
+                status="open",
+                confidence=round(confidence, 2),
+                supporting=len(supporting),
+                note=(
+                    f"raised by {', '.join(sorted(distinct_rules))} — "
+                    "not yet tested by the agent"
+                ),
+            )
+        )
+
+    hypotheses.sort(key=lambda h: -h.confidence)
+    return hypotheses
+
+
+def _summary_for(incident: "Incident") -> str:
+    first = incident.timeline[0] if incident.timeline else None
+    last = incident.timeline[-1] if incident.timeline else None
+    span = int((incident.closed_at - incident.opened_at).total_seconds())
+
+    count = len(incident.alerts)
+    tactics = len(incident.tactics)
+    parts = [
+        f"{count} alert{'s' if count != 1 else ''} on {incident.host.split('.')[0]}",
+        f"spanning {span}s" if span else "within the same second",
+        f"across {tactics} tactic{'s' if tactics != 1 else ''}",
+    ]
+    detail = ", ".join(parts) + "."
+
+    if first and last and first is not last:
+        detail += f" Opens with {first.action.lower()}; ends with {last.action.lower()}."
+    elif first:
+        detail += f" {first.action}."
+    return detail
+
+
 def correlate(alerts: list[Alert], window: timedelta = DEFAULT_WINDOW) -> list[Incident]:
     """Group alerts into incidents by host, then by gaps in time."""
     if not alerts:
@@ -207,6 +297,8 @@ def correlate(alerts: list[Alert], window: timedelta = DEFAULT_WINDOW) -> list[I
         incident.severity = _severity_for(cluster, incident.tactics)
         incident.title = _title_for(host, incident.tactics, incident.techniques)
         incident.timeline = _timeline_for(cluster)
+        incident.hypotheses = _hypotheses_for(cluster)
+        incident.summary = _summary_for(incident)
         incidents.append(incident)
 
     # Worst first, then most recent — the order an analyst wants the queue in.

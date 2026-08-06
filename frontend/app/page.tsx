@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { incidents, queueStats } from "@/lib/mock";
+import { incidents, provenance, queueStats } from "@/lib/data";
 
 const statusLabel: Record<string, string> = {
   triage: "triage",
@@ -25,14 +25,12 @@ export default function QueuePage() {
           <div className="counter-l">Open</div>
         </div>
         <div>
-          <div className="counter-n" data-tone="cleared">
-            {queueStats.autoCleared}
-          </div>
-          <div className="counter-l">Auto-cleared</div>
+          <div className="counter-n">{provenance.alerts}</div>
+          <div className="counter-l">Alerts</div>
         </div>
         <div>
-          <div className="counter-n">{queueStats.entitiesKnown.toLocaleString()}</div>
-          <div className="counter-l">Entities known</div>
+          <div className="counter-n">{provenance.events}</div>
+          <div className="counter-l">Events parsed</div>
         </div>
       </div>
 
@@ -58,7 +56,7 @@ export default function QueuePage() {
               <span className="row-title">{inc.title}</span>
             </div>
             <div className="row-meta">
-              <span className="mono">{inc.host}</span>
+              <span className="mono">{inc.host.split(".")[0]}</span>
               <span className="mono">{inc.technique ?? "—"}</span>
               <span className="pill" data-t={inc.status}>
                 {statusLabel[inc.status] ?? inc.status}
@@ -68,6 +66,13 @@ export default function QueuePage() {
           </Link>
         ))}
       </div>
+
+      <p className="provenance">
+        Derived from {provenance.events} real Windows events captured during known
+        attack techniques ({provenance.source}). No synthetic telemetry — the
+        technique labels ship with the corpus, so detection is measured rather
+        than asserted.
+      </p>
     </>
   );
 }

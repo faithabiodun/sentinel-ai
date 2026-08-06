@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getIncident, incidents } from "@/lib/mock";
+import { getIncident, incidents } from "@/lib/data";
 
 export function generateStaticParams() {
   return incidents.map((i) => ({ ref: i.ref }));
@@ -20,6 +20,7 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
   if (!inc) notFound();
 
   const priorSighting = inc.entities.find((e) => e.timesSeen > 1);
+  const awaitingAgent = inc.hypotheses.every((h) => h.status === "open");
 
   return (
     <>
@@ -31,7 +32,10 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
         <div className="inc-sev" data-sev={inc.severity} />
         <div>
           <div className="inc-tags">
-            <span className="mono" style={{ fontSize: "var(--text-xs)", color: "var(--paper-500)" }}>
+            <span
+              className="mono"
+              style={{ fontSize: "var(--text-xs)", color: "var(--paper-500)" }}
+            >
               {inc.ref}
             </span>
             <span className="pill" data-t={inc.severity}>
@@ -41,7 +45,10 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
               {statusLabel[inc.status] ?? inc.status}
             </span>
             {inc.technique && (
-              <span className="mono" style={{ fontSize: "var(--text-xs)", color: "var(--paper-400)" }}>
+              <span
+                className="mono"
+                style={{ fontSize: "var(--text-xs)", color: "var(--paper-400)" }}
+              >
                 {inc.technique}
               </span>
             )}
@@ -56,14 +63,14 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
           <div className="memory-label">Seen before</div>
           {priorSighting && (
             <p>
-              <span className="mono">{priorSighting.value}</span> — {priorSighting.reasoning} Risk{" "}
-              {priorSighting.riskScore}.
+              <span className="mono">{priorSighting.value}</span> —{" "}
+              {priorSighting.reasoning} Risk {priorSighting.riskScore}.
             </p>
           )}
           {inc.resembles && (
             <p>
-              Resembles <span className="mono">{inc.resembles.ref}</span> — {inc.resembles.why}.
-              Similarity {inc.resembles.similarity.toFixed(2)}.
+              Resembles <span className="mono">{inc.resembles.ref}</span> —{" "}
+              {inc.resembles.why}. Similarity {inc.resembles.similarity.toFixed(2)}.
             </p>
           )}
         </section>
@@ -90,6 +97,13 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
               </p>
             </div>
           ))}
+          {awaitingAgent && (
+            <p className="awaiting">
+              Every hypothesis is still open. These were raised by the detection
+              rules; confirming or refuting them is the agent&apos;s job, and the
+              agent is not connected yet.
+            </p>
+          )}
         </section>
       )}
 
@@ -101,7 +115,10 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
               <div key={t.seq} className="tl-row">
                 <span className="tl-at">{t.at}</span>
                 <span className="tl-body">
-                  {t.action} {t.mono && <span className="mono">{t.mono}</span>}
+                  {t.action}
+                  {t.occurrences > 1 && (
+                    <span className="tl-count"> ×{t.occurrences}</span>
+                  )}
                 </span>
                 {t.technique && <span className="tl-tech">{t.technique}</span>}
               </div>
@@ -110,7 +127,7 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
         </section>
       )}
 
-      {inc.entities.length > 0 && (
+      {inc.entities.length > 0 ? (
         <section className="panel">
           <p className="section-label">Entity memory</p>
           {inc.entities.map((e) => (
@@ -129,10 +146,15 @@ export default async function IncidentPage({ params }: PageProps<"/incidents/[re
             </div>
           ))}
         </section>
-      )}
-
-      {inc.hypotheses.length === 0 && (
-        <p className="empty">This incident has not been picked up by the agent yet.</p>
+      ) : (
+        <section className="panel">
+          <p className="section-label">Entity memory</p>
+          <p className="awaiting">
+            Nothing recalled. Entity memory accumulates across investigations —
+            it needs the CockroachDB layer connected before this incident can be
+            compared against anything that came before it.
+          </p>
+        </section>
       )}
     </>
   );

@@ -429,3 +429,30 @@ button { font: inherit; }
   font-size: var(--text-sm);
   color: var(--paper-400);
 }
+
+/* Provenance note under the queue — the corpus claim, stated on the screen
+ * a judge lands on first. */
+.provenance {
+  margin: var(--space-6) 0 0;
+  padding-top: var(--space-4);
+  border-top: var(--border-hair);
+  font-size: var(--text-xs);
+  color: var(--paper-400);
+  line-height: 1.7;
+  max-width: 68ch;
+}
+
+/* Marks a section the agent would fill but has not, so an empty panel reads
+ * as "not built yet" rather than "nothing found". */
+.awaiting {
+  font-size: var(--text-xs);
+  color: var(--paper-500);
+  line-height: 1.7;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  background: var(--paper-50);
+  border-left: 2px solid var(--iris-300);
+  border-radius: 0;
+}
+
+.tl-count { color: var(--iris-300); font-family: var(--font-mono); font-size: var(--text-xs); }

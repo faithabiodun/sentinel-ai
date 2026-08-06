@@ -1,0 +1,355 @@
+{
+  "generated": {
+    "events": 75,
+    "alerts": 17,
+    "incidents": 7,
+    "source": "EVTX-ATTACK-SAMPLES"
+  },
+  "incidents": [
+    {
+      "ref": "INC-0007",
+      "title": "Credential access on MSEDGEWIN10",
+      "severity": "critical",
+      "status": "triage",
+      "host": "MSEDGEWIN10",
+      "user": "\u2014",
+      "technique": "T1003.001",
+      "tactics": [
+        "credential-access"
+      ],
+      "openedAt": "2020-06-30 14:24",
+      "alertCount": 1,
+      "summary": "1 alert on MSEDGEWIN10, within the same second, across 1 tactic. PowerShell script block references MiniDumpWriteDump.",
+      "hypotheses": [
+        {
+          "id": "INC-0007-h1",
+          "statement": "Credentials were dumped from LSASS memory",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by credential_tooling_in_script \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "14:24:08",
+          "action": "PowerShell script block references MiniDumpWriteDump",
+          "actor": "unknown",
+          "technique": "T1003.001",
+          "occurrences": 1
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0006",
+      "title": "Credential access on MSEDGEWIN10",
+      "severity": "critical",
+      "status": "triage",
+      "host": "MSEDGEWIN10",
+      "user": "IEUser",
+      "technique": "T1003.001",
+      "tactics": [
+        "credential-access"
+      ],
+      "openedAt": "2020-03-08 22:11",
+      "alertCount": 2,
+      "summary": "2 alerts on MSEDGEWIN10, within the same second, across 1 tactic. Opens with handle requested on lsass.exe with access mask 0x1f3fff; ends with handle requested on lsass.exe with access mask 0x10.",
+      "hypotheses": [
+        {
+          "id": "INC-0006-h1",
+          "statement": "Credentials were dumped from LSASS memory",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 2,
+          "contradicting": 0,
+          "note": "raised by lsass_object_access \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "22:11:34",
+          "action": "Handle requested on lsass.exe with access mask 0x1f3fff",
+          "actor": "cscript.exe",
+          "technique": "T1003.001",
+          "occurrences": 1
+        },
+        {
+          "seq": 2,
+          "at": "22:11:34",
+          "action": "Handle requested on lsass.exe with access mask 0x10",
+          "actor": "cscript.exe",
+          "technique": "T1003.001",
+          "occurrences": 1
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0003",
+      "title": "Credential access on IEWIN7",
+      "severity": "critical",
+      "status": "triage",
+      "host": "IEWIN7",
+      "user": "\u2014",
+      "technique": "T1003.001",
+      "tactics": [
+        "defense-evasion",
+        "credential-access"
+      ],
+      "openedAt": "2019-04-30 12:43",
+      "alertCount": 3,
+      "summary": "3 alerts on IEWIN7, within the same second, across 2 tactics. Opens with remote thread created in lsass.exe; ends with remote thread created in lsass.exe.",
+      "hypotheses": [
+        {
+          "id": "INC-0003-h1",
+          "statement": "Code was injected into another process to evade detection",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 2,
+          "contradicting": 0,
+          "note": "raised by remote_thread_created \u2014 not yet tested by the agent"
+        },
+        {
+          "id": "INC-0003-h2",
+          "statement": "Credentials were dumped from LSASS memory",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by lsass_process_access \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "12:43:43",
+          "action": "Remote thread created in lsass.exe",
+          "actor": "voice_mail.msg.exe",
+          "technique": "T1055",
+          "occurrences": 1
+        },
+        {
+          "seq": 2,
+          "at": "12:43:43",
+          "action": "voice_mail.msg.exe opened a handle on lsass.exe with access 0x1f1fff",
+          "actor": "voice_mail.msg.exe",
+          "technique": "T1003.001",
+          "occurrences": 1
+        },
+        {
+          "seq": 3,
+          "at": "12:43:43",
+          "action": "Remote thread created in lsass.exe",
+          "actor": "voice_mail.msg.exe",
+          "technique": "T1055",
+          "occurrences": 1
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0002",
+      "title": "Credential access on IEWIN7",
+      "severity": "critical",
+      "status": "triage",
+      "host": "IEWIN7",
+      "user": "\u2014",
+      "technique": "T1003.001",
+      "tactics": [
+        "credential-access"
+      ],
+      "openedAt": "2019-04-18 16:58",
+      "alertCount": 2,
+      "summary": "2 alerts on IEWIN7, spanning 200s, across 1 tactic. powershell.exe opened a handle on lsass.exe with access 0x1010.",
+      "hypotheses": [
+        {
+          "id": "INC-0002-h1",
+          "statement": "Credentials were dumped from LSASS memory",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 2,
+          "contradicting": 0,
+          "note": "raised by lsass_process_access \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "16:58:14",
+          "action": "powershell.exe opened a handle on lsass.exe with access 0x1010",
+          "actor": "powershell.exe",
+          "technique": "T1003.001",
+          "occurrences": 2
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0004",
+      "title": "Lateral movement on IEWIN7",
+      "severity": "high",
+      "status": "triage",
+      "host": "IEWIN7",
+      "user": "IEWIN7\\IEUser, NT AUTHORITY\\SYSTEM",
+      "technique": "T1021.002",
+      "tactics": [
+        "lateral-movement",
+        "execution"
+      ],
+      "openedAt": "2019-04-30 20:26",
+      "alertCount": 6,
+      "summary": "6 alerts on IEWIN7, spanning 359s, across 2 tactics. Opens with remote service pipe connected: \\ntsvcs; ends with wmi remote execution: wmiprvse.exe spawned cmd.exe.",
+      "hypotheses": [
+        {
+          "id": "INC-0004-h1",
+          "statement": "A remote service was created to execute code on this host",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by pipe_connection \u2014 not yet tested by the agent"
+        },
+        {
+          "id": "INC-0004-h2",
+          "statement": "An encoded PowerShell payload was executed",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 2,
+          "contradicting": 0,
+          "note": "raised by encoded_powershell \u2014 not yet tested by the agent"
+        },
+        {
+          "id": "INC-0004-h3",
+          "statement": "Commands were executed remotely over WMI",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 3,
+          "contradicting": 0,
+          "note": "raised by remote_execution_parent \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "20:26:51",
+          "action": "Remote service pipe connected: \\ntsvcs",
+          "actor": "system",
+          "technique": "T1021.002",
+          "occurrences": 1
+        },
+        {
+          "seq": 2,
+          "at": "20:26:52",
+          "action": "PowerShell launched with an encoded command",
+          "actor": "powershell.exe",
+          "technique": "T1059.001",
+          "occurrences": 2
+        },
+        {
+          "seq": 3,
+          "at": "20:32:51",
+          "action": "WMI remote execution: wmiprvse.exe spawned cmd.exe",
+          "actor": "cmd.exe",
+          "technique": "T1047",
+          "occurrences": 3
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0005",
+      "title": "Defence evasion on IEWIN7",
+      "severity": "medium",
+      "status": "triage",
+      "host": "IEWIN7",
+      "user": "IEWIN7\\IEUser",
+      "technique": "T1218.011",
+      "tactics": [
+        "defense-evasion"
+      ],
+      "openedAt": "2019-05-21 15:32",
+      "alertCount": 2,
+      "summary": "2 alerts on IEWIN7, within the same second, across 1 tactic. Opens with rundll32.exe executed with arguments; ends with mshta.exe executed with arguments.",
+      "hypotheses": [
+        {
+          "id": "INC-0005-h1",
+          "statement": "A signed Windows binary was used to proxy execution",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by lolbin_execution \u2014 not yet tested by the agent"
+        },
+        {
+          "id": "INC-0005-h2",
+          "statement": "A signed Windows binary was used to proxy execution",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by lolbin_execution \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "15:32:57",
+          "action": "rundll32.exe executed with arguments",
+          "actor": "rundll32.exe",
+          "technique": "T1218.011",
+          "occurrences": 1
+        },
+        {
+          "seq": 2,
+          "at": "15:32:57",
+          "action": "mshta.exe executed with arguments",
+          "actor": "mshta.exe",
+          "technique": "T1218.005",
+          "occurrences": 1
+        }
+      ],
+      "entities": []
+    },
+    {
+      "ref": "INC-0001",
+      "title": "Persistence established on WIN-77LTAPHIQ1R",
+      "severity": "medium",
+      "status": "triage",
+      "host": "WIN-77LTAPHIQ1R.example.corp",
+      "user": "Administrator",
+      "technique": "T1053.005",
+      "tactics": [
+        "persistence"
+      ],
+      "openedAt": "2019-03-19 00:02",
+      "alertCount": 1,
+      "summary": "1 alert on WIN-77LTAPHIQ1R, within the same second, across 1 tactic. Scheduled task registered: \\CYAlyNSS.",
+      "hypotheses": [
+        {
+          "id": "INC-0001-h1",
+          "statement": "Persistence was established through a scheduled task",
+          "status": "open",
+          "confidence": 0.45,
+          "supporting": 1,
+          "contradicting": 0,
+          "note": "raised by scheduled_task_created \u2014 not yet tested by the agent"
+        }
+      ],
+      "timeline": [
+        {
+          "seq": 1,
+          "at": "00:02:04",
+          "action": "Scheduled task registered: \\CYAlyNSS",
+          "actor": "Administrator",
+          "technique": "T1053.005",
+          "occurrences": 1
+        }
+      ],
+      "entities": []
+    }
+  ]
+}
