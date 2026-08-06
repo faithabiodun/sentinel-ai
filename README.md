@@ -93,9 +93,30 @@ is known independently. That makes the derived timelines checkable and lets the
 project report precision, recall, and mean-time-to-triage rather than asserting
 that it works.
 
+## Running it
+
+```bash
+python -m venv .venv && .venv/Scripts/activate     # source .venv/bin/activate elsewhere
+pip install -r backend/requirements.txt
+
+python scripts/fetch_datasets.py   # pull the attack corpus
+python scripts/evaluate.py         # score detectors against shipped labels
+python scripts/triage.py           # full pipeline: events -> alerts -> incidents
+```
+
+Current numbers, reproducible from a clean checkout:
+
+```
+ground-truth technique recovered: 8/8 (100%)
+75 events -> 17 alerts -> 7 incidents
+rules exercised: 9/9
+```
+
 ## Status
 
-Early. Schema and design system are in; ingestion and agent loop are next.
+Ingestion, detection and correlation work against the real corpus. The agent
+loop, the memory layer, and the report writer are next — those need a
+CockroachDB cluster and Bedrock model access.
 
 ## Licence
 
