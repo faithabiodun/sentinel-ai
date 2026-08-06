@@ -83,10 +83,10 @@
   /* ---------------------------------------------------------------------
    * Type
    * ------------------------------------------------------------------ */
-  --font-ui:   'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-ui: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   /* Every IOC, hash, path, PID and command line renders in mono. If an
    * analyst would paste it into a ticket, it is monospace. */
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
 
   --text-2xs: 0.6875rem;  /* 11px — table meta, timestamps */
   --text-xs:  0.75rem;
