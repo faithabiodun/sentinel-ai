@@ -65,7 +65,9 @@ button { font: inherit; }
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--verdict-benign);
+  /* Amber, not green. Nothing is being watched live — this is a fixed
+   * corpus, and a green pulse would imply a running feed. */
+  background: var(--sev-medium);
 }
 
 .main { padding: var(--space-5) var(--space-4) 88px; }

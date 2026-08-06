@@ -26,9 +26,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </Link>
         ))}
         <div className="rail-foot">
-          Memory layer connected
+          Memory layer not connected
           <br />
-          CockroachDB · eu-central-1
+          Running on the sample corpus
         </div>
       </nav>
 
@@ -36,7 +36,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <div className="wordmark">
           sentinel<span>.</span>
         </div>
-        <span className="live">Watching</span>
+        <span className="live">Sample corpus</span>
       </header>
 
       <main className="main">{children}</main>
