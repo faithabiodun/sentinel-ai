@@ -48,14 +48,23 @@ async function apiFetch<T>(
   init: RequestInit = {},
 ): Promise<T> {
   const token = getToken();
-  const res = await fetch(`${BASE}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers,
-    },
-  });
+
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init.headers,
+      },
+    });
+  } catch {
+    // fetch() rejects on DNS/connection failure with an opaque TypeError.
+    // Name the actual problem — an unreachable API is the most likely
+    // misconfiguration in a fresh deployment.
+    throw new ApiError(0, `Cannot reach the API at ${BASE}. Is the backend running?`);
+  }
 
   if (!res.ok) {
     let detail = res.statusText;
