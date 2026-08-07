@@ -8,6 +8,11 @@ uvicorn[standard]==0.52.1
 # CockroachDB over the Postgres wire protocol
 psycopg[binary,pool]==3.3.4
 
+# Auth
+python-jose[cryptography]==3.3.0
+bcrypt>=4.0.0
+email-validator==2.2.0
+
 # Bedrock (planning + embeddings) and S3
 boto3==1.43.65
 

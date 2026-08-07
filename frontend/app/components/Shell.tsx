@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "./AuthProvider";
 
 const nav = [
   { href: "/", label: "Queue" },
@@ -11,6 +12,12 @@ const nav = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  // Don't render the chrome on auth pages
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  if (isAuthPage) return <>{children}</>;
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" || pathname.startsWith("/incidents") : pathname.startsWith(href);
 
@@ -26,9 +33,16 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </Link>
         ))}
         <div className="rail-foot">
-          Memory layer not connected
-          <br />
-          Running on the sample corpus
+          {user ? (
+            <>
+              <span className="rail-user">{user.display_name}</span>
+              <button className="rail-logout" onClick={logout}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            "Not signed in"
+          )}
         </div>
       </nav>
 
@@ -36,7 +50,11 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <div className="wordmark">
           sentinel<span>.</span>
         </div>
-        <span className="live">Sample corpus</span>
+        {user && (
+          <button className="topbar-logout" onClick={logout} aria-label="Sign out">
+            {user.display_name}
+          </button>
+        )}
       </header>
 
       <main className="main">{children}</main>

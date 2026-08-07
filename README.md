@@ -112,11 +112,42 @@ ground-truth technique recovered: 8/8 (100%)
 rules exercised: 9/9
 ```
 
+### Connecting the memory layer
+
+```bash
+cp .env.example .env          # fill in DATABASE_URL, AWS credentials, JWT_SECRET
+
+python scripts/migrate.py     # apply db/schema.sql to CockroachDB
+python scripts/load_db.py     # persist pipeline output (incidents, alerts, hypotheses)
+
+# Backend API
+uvicorn backend.app.main:app --reload --port 8000
+
+# Frontend (separate terminal)
+cd frontend && npm install && npm run dev
+```
+
+The frontend is now behind auth — create an account at `/signup`, then open
+an incident and click **Investigate** to run the agent loop.
+
 ## Status
 
-Ingestion, detection and correlation work against the real corpus. The agent
-loop, the memory layer, and the report writer are next — those need a
-CockroachDB cluster and Bedrock model access.
+Fully built end-to-end:
+
+| Layer | Status |
+|---|---|
+| Ingestion & detection | ✓ working, 8/8 techniques recovered |
+| Correlation | ✓ working |
+| Schema & migration | ✓ `scripts/migrate.py` |
+| DB loader | ✓ `scripts/load_db.py` |
+| FastAPI backend | ✓ auth, incidents, entities, investigate |
+| Agent loop | ✓ Claude on Bedrock + tool dispatch |
+| Entity memory | ✓ upsert with benign-cleared tracking |
+| Vector similarity | ✓ incident embedding via Titan |
+| Auth (JWT) | ✓ sign-up / sign-in / protected routes |
+| Frontend | ✓ live API, middleware-gated, investigate button |
+
+Needs: CockroachDB Cloud cluster + AWS Bedrock access to run the agent.
 
 ## Licence
 

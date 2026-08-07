@@ -1,6 +1,6 @@
 -- Sentinel AI — agentic memory schema
 --
--- Seven tables. The design goal is that an analyst (or a judge) can read this
+-- Eight tables. The design goal is that an analyst (or a judge) can read this
 -- file and understand exactly what the agent remembers and why.
 --
 -- Requires CockroachDB v25.2+ for native VECTOR columns and vector indexes.
@@ -46,6 +46,7 @@ CREATE TABLE alert (
   source        STRING NOT NULL,            -- 'sysmon', 'security', 'powershell'
   event_id      INT,                        -- Windows event ID, when applicable
   rule          STRING,                     -- detector that fired
+  summary       STRING,                     -- human-readable one-liner from the detector
   raw           JSONB NOT NULL,             -- original event, unmodified
   host          STRING,
   user_principal STRING,
@@ -64,11 +65,15 @@ CREATE TABLE alert (
 
 CREATE TABLE incident (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ref          STRING NOT NULL,             -- human-readable INC-NNNN
   title        STRING NOT NULL,
   severity     severity NOT NULL DEFAULT 'medium',
   status       incident_status NOT NULL DEFAULT 'triage',
+  host         STRING,                      -- primary host (from the alert cluster)
+  primary_user STRING,                      -- principal user seen across alerts
   summary      STRING,                      -- agent-written, updated as it learns
   root_cause   STRING,
+  report       STRING,                      -- full markdown report the agent writes
   attack_technique STRING,                  -- MITRE ATT&CK id, e.g. 'T1003.001'
 
   -- Semantic fingerprint of the case. This is what powers
@@ -78,6 +83,7 @@ CREATE TABLE incident (
   opened_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   closed_at    TIMESTAMPTZ,
 
+  UNIQUE INDEX idx_incident_ref (ref),
   INDEX idx_incident_status (status, opened_at DESC),
   INDEX idx_incident_severity (severity, opened_at DESC)
 );
@@ -222,4 +228,20 @@ CREATE TABLE entity_sighting (
   seen_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
 
   PRIMARY KEY (entity_id, incident_id)
+);
+
+-- ---------------------------------------------------------------------------
+-- analyst — human users of the platform
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE analyst (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email         STRING NOT NULL,
+  display_name  STRING NOT NULL,
+  password_hash STRING NOT NULL,
+  role          STRING NOT NULL DEFAULT 'analyst',  -- 'analyst' | 'admin'
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_login    TIMESTAMPTZ,
+
+  UNIQUE INDEX idx_analyst_email (email)
 );
