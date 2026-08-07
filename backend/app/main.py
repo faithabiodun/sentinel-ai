@@ -54,7 +54,9 @@ async def health() -> dict:
     operator can see which secret is missing instead of reading a crash loop.
     """
     database = configured()
-    bedrock = bool(settings.aws_access_key_id) or bool(settings.s3_bucket)
+    # Credentials are what the agent actually needs. S3 is not wired to
+    # anything yet, so it must not count towards Bedrock being usable.
+    bedrock = bool(settings.aws_access_key_id and settings.aws_secret_access_key)
     return {
         "status": "ok" if database else "degraded",
         "database": "connected" if database else "not configured",
