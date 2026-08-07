@@ -130,6 +130,48 @@ cd frontend && npm install && npm run dev
 The frontend is now behind auth — create an account at `/signup`, then open
 an incident and click **Investigate** to run the agent loop.
 
+## Deployment
+
+Two Railway services in the `sentinel-ai` project, both deployed from this repo:
+
+| Service | URL | Build |
+|---|---|---|
+| `sentinel-ai` (frontend) | https://sentinel-ai-production-c300.up.railway.app | Node autodetect, npm workspace |
+| `sentinel-api` (backend) | https://sentinel-api-production-588e.up.railway.app | `backend/Dockerfile` via `RAILWAY_DOCKERFILE_PATH` |
+
+The repository root is an npm workspace, so autodetection builds the frontend
+for *any* service pointed at it. The API service sets
+`RAILWAY_DOCKERFILE_PATH=backend/Dockerfile` to override that; without it the
+API answers `/healthz` with a Next.js redirect to `/login`.
+
+`GET /healthz` reports which secrets are present:
+
+```json
+{"status":"degraded","database":"not configured","bedrock":"not configured","agent_available":false}
+```
+
+### Remaining to go fully live
+
+The deployment is complete but **not yet functional** — it needs two secrets
+that require accounts this repo cannot provision:
+
+1. **CockroachDB Cloud cluster** — create a free serverless cluster at
+   [cockroachlabs.cloud](https://cockroachlabs.cloud), then:
+   ```bash
+   railway variables --service sentinel-api --set "DATABASE_URL=<connection-string>"
+   railway run --service sentinel-api python scripts/migrate.py
+   railway run --service sentinel-api python scripts/load_db.py
+   ```
+2. **AWS Bedrock model access** — enable Claude and Titan Embeddings in the
+   Bedrock console, then:
+   ```bash
+   railway variables --service sentinel-api \
+     --set "AWS_ACCESS_KEY_ID=<key>" --set "AWS_SECRET_ACCESS_KEY=<secret>"
+   ```
+
+Until `DATABASE_URL` is set, sign-up returns a 503 naming the missing secret
+rather than failing opaquely, and the container stays up rather than crash-looping.
+
 ## Status
 
 Fully built end-to-end:
